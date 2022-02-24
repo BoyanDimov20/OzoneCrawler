@@ -1,11 +1,14 @@
-﻿using OzoneCrawler.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using OzoneCrawler.Core.Interfaces;
+using OzoneCrawler.Data;
 using OzoneCrawler.Data.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OzoneCrawler.Core.Services
 {
-    public class ProductService
+    public class ProductService : IProductService
     {
         private readonly ApplicationDbContext dbContext;
 
@@ -47,6 +50,18 @@ namespace OzoneCrawler.Core.Services
         public async Task SaveChangesAsync()
         {
             await dbContext.SaveChangesAsync();
+        }
+
+        public Task<List<ProductModel>> GetProductsAsync()
+        {
+            return this.dbContext.Products.Select(x => new ProductModel
+            {
+                Discount = x.Discount,
+                DiscountPrice = x.DiscountPrice,
+                ImageUrl = x.ImageUrl,
+                Price = x.Price,
+                ProductName = x.ProductName
+            }).ToListAsync();
         }
     }
 }

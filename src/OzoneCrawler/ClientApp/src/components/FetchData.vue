@@ -1,28 +1,30 @@
-<template>
-    <h1 id="tableLabel">Weather forecast</h1>
+﻿<template>
+    <div class="container">
+        <h1 id="tableLabel">Weather forecast</h1>
 
-    <p>This component demonstrates fetching data from the server.</p>
+        <p>This component demonstrates fetching data from the server.</p>
 
-    <p v-if="!forecasts"><em>Loading...</em></p>
+        <p v-if="!products"><em>Loading...</em></p>
 
-    <table class='table table-striped' aria-labelledby="tableLabel" v-if="forecasts">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="forecast of forecasts" v-bind:key="forecast">
-                <td>{{ forecast.date }}</td>
-                <td>{{ forecast.temperatureC }}</td>
-                <td>{{ forecast.temperatureF }}</td>
-                <td>{{ forecast.summary }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div v-if="products">
+            <div class="row">
+                <div class="col-4" v-for="product in products" v-bind:key="product">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" :src="product.imageUrl" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">{{product.productName}}</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Стара цена: {{product?.price}}</li>
+                            <li class="list-group-item">Намелена цена: {{product?.discountPrice}}</li>
+                            <li class="list-group-item">Намаление: {{product?.discount}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </template>
 
 
@@ -32,14 +34,14 @@
         name: "FetchData",
         data() {
             return {
-                forecasts: []
+                products: []
             }
         },
         methods: {
-            getWeatherForecasts() {
-                axios.get('/weatherforecast')
+            getProducts() {
+                axios.get('/product')
                     .then((response) => {
-                        this.forecasts =  response.data;
+                        this.products =  response.data;
                     })
                     .catch(function (error) {
                         alert(error);
@@ -47,7 +49,7 @@
             }
         },
         mounted() {
-            this.getWeatherForecasts();
+            this.getProducts();
         }
     }
 </script>

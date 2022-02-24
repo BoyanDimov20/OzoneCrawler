@@ -6,6 +6,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace OzoneCrawler.Worker
 {
@@ -37,7 +38,10 @@ namespace OzoneCrawler.Worker
                     var result = await productService.AddProductAsync(product);
                     await productService.SaveChangesAsync();
 
-                    Console.WriteLine($"{product.ProductName}: {product.DiscountPrice} - {product.Price} ({result.ToString()})");
+                    if (result == ProductChange.Added || result == ProductChange.Updated)
+                    {
+                        Console.WriteLine($"{product.ProductName}: {product.DiscountPrice} - {product.Price} ({result.ToString()})");
+                    }
                 }
                 Thread.Sleep(2000);
             }
