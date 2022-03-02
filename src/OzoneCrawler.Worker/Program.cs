@@ -1,12 +1,7 @@
-﻿using HtmlAgilityPack;
-using OzoneCrawler.Data;
-using OzoneCrawler.Core;
+﻿using OzoneCrawler.Data;
 using OzoneCrawler.Core.Services;
-using System;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using OzoneCrawler.Worker.Models;
 
 namespace OzoneCrawler.Worker
 {
@@ -14,40 +9,10 @@ namespace OzoneCrawler.Worker
     {
         static async Task Main(string[] args)
         {
-            var dbContext = new ApplicationDbContext();
-            var productService = new ProductService(dbContext);
-            using var httpClient = new HttpClient();
+            var db = new ApplicationDbContext();
+            var engine = new CrawlerEngine(new ProductService(db));
 
-            const string BaseUrl = "https://www.ozone.bg";
-
-            foreach (var section in OzoneSection.Sections)
-            {
-                var htmlResult = await httpClient.GetAsync($"{BaseUrl}{section}");
-
-                var htmlDocument = new HtmlDocument();
-                htmlDocument.LoadHtml(htmlResult.Content.ReadAsStringAsync().GetAwaiter().GetResult());
-
-                var articles = htmlDocument.DocumentNode
-                    .SelectSingleNode("//section")
-                    .SelectNodes("//article");
-
-                foreach (var article in articles)
-                {
-                    var product = Crawler.GetProductByHtmlNode(article);
-
-                    var result = await productService.AddProductAsync(product);
-                    await productService.SaveChangesAsync();
-
-                    if (result == ProductChange.Added || result == ProductChange.Updated)
-                    {
-                        Console.WriteLine($"{product.ProductName}: {product.DiscountPrice} - {product.Price} ({result.ToString()})");
-                    }
-                }
-                Thread.Sleep(2000);
-            }
-            
-            
-            
+            await engine.Run(Statistics.Changes);
         }
     }
 }

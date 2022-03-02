@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OzoneCrawler.Core.Interfaces;
+using OzoneCrawler.Core.Models;
 using OzoneCrawler.Data;
 using OzoneCrawler.Data.Models;
 using System.Collections.Generic;
@@ -37,7 +38,8 @@ namespace OzoneCrawler.Core.Services
                     Discount = product.Discount,
                     DiscountPrice = product.DiscountPrice,
                     ImageUrl = product.ImageUrl,
-                    Price = product.Price
+                    Price = product.Price,
+                    Category = product.Category
                 });
             }
             else
@@ -62,6 +64,30 @@ namespace OzoneCrawler.Core.Services
                 Price = x.Price,
                 ProductName = x.ProductName
             }).ToListAsync();
+        }
+
+        public Task<List<ProductModel>> GetProductsByNameAsync(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return GetProductsAsync();
+            }
+
+            return this.dbContext.Products
+                .Where(x => x.ProductName.Contains(value))
+                .Select(x => new ProductModel
+            {
+                Discount = x.Discount,
+                DiscountPrice = x.DiscountPrice,
+                ImageUrl = x.ImageUrl,
+                Price = x.Price,
+                ProductName = x.ProductName
+            }).ToListAsync();
+        }
+
+        public Task<int> ProductCount()
+        {
+            return this.dbContext.Products.CountAsync();
         }
     }
 }

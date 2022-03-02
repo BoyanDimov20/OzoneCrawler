@@ -23,5 +23,7 @@ namespace OzoneCrawler.Data.Models
         public string Price { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public ProductCategory Category { get; set; }
     }
 }

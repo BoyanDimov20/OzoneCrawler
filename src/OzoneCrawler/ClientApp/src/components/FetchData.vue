@@ -1,10 +1,16 @@
 ﻿<template>
     <div class="container">
-        <h1 id="tableLabel">Weather forecast</h1>
 
-        <p>This component demonstrates fetching data from the server.</p>
+        <h1>Products</h1>
+        
+        <form class="d-flex my-4 col-6" v-on:submit.prevent="noop">
+            <input class="form-control" @change="searchProducts" v-model="search" type="search" placeholder="Search" aria-label="Search">
+        </form>
+        
 
         <p v-if="!products"><em>Loading...</em></p>
+
+
 
         <div v-if="products">
             <div class="row">
@@ -34,7 +40,8 @@
         name: "FetchData",
         data() {
             return {
-                products: []
+                products: [],
+                search: ''
             }
         },
         methods: {
@@ -46,6 +53,20 @@
                     .catch(function (error) {
                         alert(error);
                     });
+            },
+            searchProducts() {
+                console.log(this.search);
+                axios.get(`/product?search=${this.search}`)
+                    .then((response) => {
+                        console.log('Called');
+                        this.products = response.data;
+                    })
+                    .catch(function (error) {
+                        alert(error);
+                    });
+            },
+            noop() {
+                // do nothing 
             }
         },
         mounted() {

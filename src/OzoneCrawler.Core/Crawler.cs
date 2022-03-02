@@ -1,4 +1,9 @@
 ﻿using HtmlAgilityPack;
+using OzoneCrawler.Core.Constants;
+using OzoneCrawler.Core.Models;
+using OzoneCrawler.Data;
+using System;
+using System.Linq;
 
 namespace OzoneCrawler.Core
 {
@@ -17,13 +22,13 @@ namespace OzoneCrawler.Core
                 var root = node.SelectSingleNode("a");
 
                 imageUrl = root.SelectSingleNode("div/img").GetAttributeValue("data-original", "");
-                discount = root.SelectSingleNode("div/span/span")?.InnerHtml;
+                discount = root.SelectSingleNode("div/span/span")?.InnerText.Trim();
 
-                productName = root.SelectSingleNode("h2").InnerText;
+                productName = root.SelectSingleNode("h2").InnerText.Trim();
 
                 var prices = root.SelectSingleNode("p/span").SelectNodes("span");
-                oldPrice = prices[0].InnerText;
-                newPrice = prices[1].InnerText;
+                oldPrice = prices[0].InnerText.Trim();
+                newPrice = prices[1].InnerText.Trim();
             }
             catch (System.Exception)
             {
@@ -42,6 +47,15 @@ namespace OzoneCrawler.Core
                 Price = oldPrice,
                 ImageUrl = imageUrl
             };
+        }
+
+        public static ProductCategory GetProductCategoryBySection(string section)
+        {
+            var ozoneSection = typeof(OzoneSection)
+                .GetFields()
+                .FirstOrDefault(x => (string) x.GetRawConstantValue() == section);
+
+            return Enum.Parse<ProductCategory>(ozoneSection.Name);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace OzoneCrawler.Core
+﻿using OzoneCrawler.Data;
+
+namespace OzoneCrawler.Core.Models
 {
     public class ProductModel
     {
@@ -13,5 +15,7 @@
         public string Price { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public ProductCategory Category { get; set; }
     }
 }
